@@ -1,7 +1,7 @@
 import java.util.Scanner;
 
 /**
-        * Class HolyGrail is a lab using the scanner. It's a simple IO program involving a bridge keeper.
+        * Class HolyGrail is a lab using a scanner. It's a simple IO program involving a bridge keeper and some questions.
         * @version 09/13/2021
         * @author sdonahue
         */
