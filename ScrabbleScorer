@@ -1,0 +1,119 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.io.*;
+import java.util.Scanner;
+
+/**
+ * ScrabbleScorer is a program designed to score a users word according to the scrabble scoring system. This program uses ArrayLists to function
+ * @version Jan 24 2022
+ * @Author sdonahue
+ */
+public class ScrabbleScorer {
+    private ArrayList<String> dictionary;
+    private int[] points = {1, 3, 3, 2, 1, 4, 2, 4, 1, 8, 5, 1, 3, 1, 1, 3, 10, 1, 1, 1, 1, 4, 4, 8, 4, 10 }; //populate array
+    private String alpha;
+
+    /**
+     * constructor for class
+     */
+    public ScrabbleScorer() {
+        dictionary = new ArrayList<>();
+        alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        buildDictionary();
+    }
+
+    /**
+     * Imports scrabble words into the array list dictionary
+     */
+    public void buildDictionary() {
+        Scanner sc = null;
+        try {
+            sc = new Scanner(new File("SCRABBLE_WORDS.TXT"));
+            while (sc.hasNext())    {
+                dictionary.add(sc.next());
+            }
+            sc.close();
+            Collections.sort(dictionary);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+        // use try catch
+        // use scanner
+        // read data file
+        // when file read into dictionary, close stream
+        // call Collections.sort(dictionary);
+
+
+    /**
+     *This determines if the user word is a valid entry
+     * @param word
+     * @return
+     */
+    public boolean isValidWord(String word) {
+        return Collections.binarySearch(dictionary, word) >= 0;
+    }
+
+    /**
+     * This is where the score of the UserWord is calculated
+     * @param word
+     * @return
+     */
+    public int getWordScore(String word)    {
+        int sum = 0;
+        // parse word one letter at a time -- for loop ""+charAt or substring
+        //find index of each letter
+        // add the corresponding score/point value from points to a sum value
+        for(int i = 0; i<= word.length()-1; i++) {
+            int num = points[alpha.indexOf("" + word.charAt(i))];
+            sum += num;
+        }
+        return sum;
+    }
+
+    /**
+     * This is the main entry point with all the text and user prompting.
+     * @param args
+     */
+    public static void main(String[] args)  {
+   /*     int[] n = {1, 4, 6, 8, -10, 12, 19, 20};
+        ArrayList<Integer> nums = new ArrayList<>();
+        for(int i : n)
+            nums.add(i);
+        Collections.sort(nums);
+        System.out.println(Collections.binarySearch(nums, 210)); */
+
+        ScrabbleScorer app = new ScrabbleScorer();
+        System.out.println("* Welcome to the Scrabble Word Scorer App *");
+        String userWord;
+        Scanner userIn = new Scanner(System.in);
+        try {
+            while (true) {
+                System.out.print("Enter a word to score or 0 to quit: ");
+                userWord = userIn.nextLine();
+                if (userWord.equals("0"))
+                    break;
+                else {
+                    //do the program
+                    // is the word in the dictionary
+                    if (app.isValidWord(userWord.toUpperCase())) {
+                        System.out.println(userWord);
+                        System.out.println(app.getWordScore(userWord.toUpperCase()));
+                    } else {
+                        System.out.println(userWord + " is not a valid word in the dictionary");
+                        System.out.println(userWord);
+                    }
+                }
+            }
+        }
+        catch(Exception e)   {
+                e.printStackTrace();
+
+            }
+        System.out.println("Exiting the program thanks for playing");
+        }
+
+    }
+
