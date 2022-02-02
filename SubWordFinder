@@ -1,0 +1,124 @@
+import java.util.*;
+import java.io.*;
+
+/** This program is designed to go through a list of words and separate each word into its two subwords. The program uses a binary search algorithm with getSubWords to find the subwords.
+ *
+ * @author sdonahue
+ * @version 02/01/21
+ */
+
+public class SubWordFinder implements WordFinder {
+    private ArrayList<ArrayList<String>> dictionary; //jagged list
+    private String alpha = "abcdefghijklmnopqrstuvwxyz";
+
+    /**
+     * For finding the subwords
+     */
+    public SubWordFinder()  {
+        dictionary = new ArrayList<>();
+        for(int i = 0; i < alpha.length();i++)  {
+            dictionary.add(new ArrayList<String>());
+        }
+        populateDictionary();
+    }
+
+    /**
+     * This is where the dictionary is populated, words are added.
+     */
+    public void populateDictionary()    {
+        try {
+            Scanner in = new Scanner(new File("words_all_os.txt"));
+
+            while(in.hasNext()) {
+                String word = in.nextLine();
+                dictionary.get(alpha.indexOf(word.charAt(0))).add(word);
+            }
+            in.close();
+        }
+        catch(Exception e)  {
+            e.printStackTrace();
+        }
+    }
+
+
+
+    @Override
+    public boolean inDictionary(String word)    {
+        int index = alpha.indexOf(word.charAt(0));
+        ArrayList<String> bucket = dictionary.get(index);
+        return indexOf(bucket, word) >= 0;
+    }
+
+    /**
+     * Binary search algorithm
+     */
+    private int indexOf(ArrayList<String> dict, String word)   {
+        int min = 0, max = dict.size()-1, mid;
+        while(min <= max){
+            mid = (min + max) / 2;
+            if (dict.get(mid).compareTo(word)<0)    {
+                min = mid + 1;
+            }
+            else if(dict.get(mid).compareTo(word)>0)    {
+                max = mid - 1;
+            }
+            else {
+                return mid;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * This is where the word is split into two subwords and added
+     * @return subwords
+     */
+    @Override
+    public ArrayList<SubWord> getSubWords() {
+        String root1 = "";
+        String root2 = "";
+        ArrayList<SubWord> subwords = new ArrayList<>();
+        for(ArrayList<String> bucket : dictionary)  {
+            for(String word : bucket)   {
+                for(int i=3; i < word.length()-2; i++) {
+                    root1 = word.substring(0, i);
+                    root2 = word.substring(i);
+                    if (inDictionary(root1) && inDictionary(root2)) {
+                        subwords.add(new SubWord(word, root1, root2));
+                    }
+                }
+            }
+        }
+        return subwords;
+    }
+
+    
+    public void printDictionary()   {
+        for(ArrayList<String> bucket : dictionary)
+            System.out.println(bucket);
+        int MAXLEN = dictionary.get(0).size();
+        int MAXINDEX = 0;
+        for(int i = 1; i < dictionary.size(); i++) {
+            if(dictionary.get(i).size() > MAXLEN) {
+                MAXLEN = dictionary.get(i).size();
+                MAXINDEX = i;
+            }
+        }
+        System.out.println("The longest sublist is at index " + MAXINDEX + " starting with " + "the letter " + alpha.charAt(MAXINDEX));
+    }
+
+    /**
+     * main method where everything is printed
+     */
+    public static void main(String[] args) {
+        SubWordFinder app = new SubWordFinder();
+        for(SubWord a : app.getSubWords())  {
+            System.out.println(a);
+        }
+
+        System.out.println(app.getSubWords().size());
+    }
+
+
+
+}
